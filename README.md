@@ -1,5 +1,7 @@
 # rediscustomsync
 
+![prototype](Xnip2020-09-29_16-44-31.jpg)
+
 作者将其定义为一个脚本工具，用于机器之间特定 Redis 的 key 的同步。
 解决的问题有：
 
