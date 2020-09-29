@@ -1,0 +1,25 @@
+title = "Redis Custom Synchronization"
+description = "对某些 key 做同步拉取"
+
+# 同步时间间隔，可以看作是休眠时间 单位：毫秒
+interval    = 100
+# 将 TTL信息带过来
+enablettl   = true
+keysfile = "/Users/guoruibiao/go/src/rediscustomsync/keysfile"
+patterns = [
+    # 一行一个通配符
+    "ti*",
+    "123*"
+]
+
+[source]
+host = "10.64.9.59"
+port = 8379
+db   = 0
+auth = ""
+
+[destination]
+host = "10.138.43.130"
+port = 8379
+db   = 1
+auth = ""
