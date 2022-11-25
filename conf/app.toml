@@ -5,21 +5,19 @@ description = "对某些 key 做同步拉取"
 interval    = 100
 # 将 TTL信息带过来
 enablettl   = true
-keysfile = "/Users/guoruibiao/go/src/rediscustomsync/keysfile"
+keysfile = "./keysfile"
 patterns = [
-    # 一行一个通配符
-    "ti*",
-    "123*"
+    # 一行一个通配符 "WechatService.AccToken*",
 ]
 
 [source]
-host = "10.64.9.59"
-port = 8379
-db   = 0
+host = ""
+port = 6379
+db   = 1
 auth = ""
 
 [destination]
-host = "10.138.43.130"
-port = 8379
-db   = 1
+host = ""
+port = 6379
+db   = 5
 auth = ""

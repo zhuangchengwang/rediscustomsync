@@ -3,26 +3,26 @@ package redisdao
 import (
 	"errors"
 	"fmt"
+	"strconv"
+
 	"github.com/gomodule/redigo/redis"
 	"github.com/guoruibiao/rediscustomsync/models/dao"
-	"strconv"
 )
-type RedisPool struct{
+
+type RedisPool struct {
 	*redis.Pool
 }
 
 var (
-	ReadPool RedisPool
+	ReadPool  RedisPool
 	WritePool RedisPool
 )
-
-
 
 func Init(config dao.AppConfig) {
 	// 初始化 ReadPool
 	readPool := &redis.Pool{
 		// Other pool configuration not shown in this example.
-		Dial: func () (redis.Conn, error) {
+		Dial: func() (redis.Conn, error) {
 			server := fmt.Sprintf("%s:%d", config.Source.Host, config.Source.Port)
 			c, err := redis.Dial("tcp", server)
 			if err != nil {
@@ -48,7 +48,7 @@ func Init(config dao.AppConfig) {
 	// 初始化 WritePool
 	writePool := &redis.Pool{
 		// Other pool configuration not shown in this example.
-		Dial: func () (redis.Conn, error) {
+		Dial: func() (redis.Conn, error) {
 			server := fmt.Sprintf("%s:%d", config.Destination.Host, config.Destination.Port)
 			c, err := redis.Dial("tcp", server)
 			if err != nil {
@@ -80,7 +80,7 @@ func (pool *RedisPool) GetString(key string) (value string, err error) {
 	return
 }
 
-func (pool *RedisPool)SetString(key, value string)(err error) {
+func (pool *RedisPool) SetString(key, value string) (err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -88,7 +88,7 @@ func (pool *RedisPool)SetString(key, value string)(err error) {
 	return
 }
 
-func (pool *RedisPool)MGet(keys ...string)(values[]string, err error) {
+func (pool *RedisPool) MGet(keys ...string) (values []string, err error) {
 	conn := pool.Get()
 	defer conn.Close()
 	for _, key := range keys {
@@ -102,7 +102,7 @@ func (pool *RedisPool)MGet(keys ...string)(values[]string, err error) {
 	return
 }
 
-func (pool *RedisPool)MSet(values ...interface{})(err error) {
+func (pool *RedisPool) MSet(values ...interface{}) (err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -110,7 +110,7 @@ func (pool *RedisPool)MSet(values ...interface{})(err error) {
 	return
 }
 
-func (pool *RedisPool)Type(key string) (value string, err error) {
+func (pool *RedisPool) Type(key string) (value string, err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -118,7 +118,7 @@ func (pool *RedisPool)Type(key string) (value string, err error) {
 	return
 }
 
-func (pool *RedisPool) TTL(key string)(ttl int, err error) {
+func (pool *RedisPool) TTL(key string) (ttl int, err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -126,7 +126,7 @@ func (pool *RedisPool) TTL(key string)(ttl int, err error) {
 	return
 }
 
-func (pool *RedisPool)Expire(key string, ttl int) (err error) {
+func (pool *RedisPool) Expire(key string, ttl int) (err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -134,7 +134,7 @@ func (pool *RedisPool)Expire(key string, ttl int) (err error) {
 	return
 }
 
-func (pool *RedisPool)Hgetall(key string)(result map[string]string, err error) {
+func (pool *RedisPool) Hgetall(key string) (result map[string]string, err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -142,7 +142,7 @@ func (pool *RedisPool)Hgetall(key string)(result map[string]string, err error) {
 	return
 }
 
-func (pool *RedisPool)Hmset(key string, members ...interface{}) (err error) {
+func (pool *RedisPool) Hmset(key string, members ...interface{}) (err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -151,7 +151,7 @@ func (pool *RedisPool)Hmset(key string, members ...interface{}) (err error) {
 }
 
 // TODO 返回值类型待定
-func (pool *RedisPool)Lrange(key string)(values []interface{}, err error) {
+func (pool *RedisPool) Lrange(key string) (values []interface{}, err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -159,7 +159,7 @@ func (pool *RedisPool)Lrange(key string)(values []interface{}, err error) {
 	return
 }
 
-func (pool *RedisPool)Lpush(key string, values ...interface{}) (err error) {
+func (pool *RedisPool) Lpush(key string, values ...interface{}) (err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -167,7 +167,7 @@ func (pool *RedisPool)Lpush(key string, values ...interface{}) (err error) {
 	return
 }
 
-func (pool *RedisPool)Zrange(key string)(result map[string]float64, err error) {
+func (pool *RedisPool) Zrange(key string) (result map[string]float64, err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -179,14 +179,14 @@ func (pool *RedisPool)Zrange(key string)(result map[string]float64, err error) {
 	for member, value := range values {
 		if floatValue, parseErr := strconv.ParseFloat(value, 64); parseErr != nil {
 			result[member] = 0
-		}else{
+		} else {
 			result[member] = floatValue
 		}
 	}
 	return
 }
 
-func (pool *RedisPool)Zadd(key string, members map[string]float64) (err error) {
+func (pool *RedisPool) Zadd(key string, members map[string]float64) (err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -199,7 +199,7 @@ func (pool *RedisPool)Zadd(key string, members map[string]float64) (err error) {
 }
 
 // TODO 类型待定
-func (pool *RedisPool)Smembers(key string) (values []interface{}, err error) {
+func (pool *RedisPool) Smembers(key string) (values []interface{}, err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -207,7 +207,7 @@ func (pool *RedisPool)Smembers(key string) (values []interface{}, err error) {
 	return
 }
 
-func (pool *RedisPool)Sadd(key string, values ...interface{}) (err error) {
+func (pool *RedisPool) Sadd(key string, values ...interface{}) (err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -215,13 +215,13 @@ func (pool *RedisPool)Sadd(key string, values ...interface{}) (err error) {
 	return
 }
 
-func (pool *RedisPool)Pattern(pattern string)(keys []string, err error) {
+func (pool *RedisPool) Pattern(pattern string) (keys []string, err error) {
 	conn := pool.Get()
 	defer conn.Close()
 
 	var cursor int
 	for {
-		reply, err := redis.Values(conn.Do("SCAN", cursor, "MATCH", pattern))
+		reply, err := redis.Values(conn.Do("SCAN", cursor, "MATCH", pattern, "COUNT", 5000))
 		if err != nil {
 			break
 		}
@@ -230,7 +230,7 @@ func (pool *RedisPool)Pattern(pattern string)(keys []string, err error) {
 			break
 		}
 		cursor, _ = redis.Int(reply[0], nil)
-		k, _     := redis.Strings(reply[1], nil)
+		k, _ := redis.Strings(reply[1], nil)
 		if len(k) > 0 {
 			keys = append(keys, k...)
 		}

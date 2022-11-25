@@ -21,12 +21,15 @@ func Readlines(filename string) (lines []string, err error) {
 	reader := bufio.NewReader(file)
 	for {
 		line, err := reader.ReadString('\n')
-		line = strings.Trim(line, "\n \t")
-		if err != nil || err == io.EOF {
+		if err != nil && err != io.EOF {
 			break
 		}
+		line = strings.Trim(line, "\n \t")
 		if line != "" {
 			lines = append(lines, line)
+		}
+		if err == io.EOF {
+			break
 		}
 	}
 	return

@@ -3,15 +3,17 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/BurntSushi/toml"
 	"github.com/guoruibiao/rediscustomsync/models/dao"
 	"github.com/guoruibiao/rediscustomsync/models/dao/redisdao"
 	"github.com/guoruibiao/rediscustomsync/models/service"
-	"os"
-	"strings"
 )
 
 var appConfig dao.AppConfig
+
 func Init(configPath string) {
 	_, err := toml.DecodeFile(configPath, &appConfig)
 	if err != nil {
@@ -49,16 +51,17 @@ func main() {
 	var configPath = flag.String("config", "", "配置文件路径")
 	flag.Parse()
 	if *configPath == "" {
-		fmt.Println("conf/app.toml 路径为空")
-		os.Exit(0)
+		*configPath = "./conf/app.toml"
+		// fmt.Println("conf/app.toml 路径为空")
+		// os.Exit(0)
 	}
 
 	// 初始化配置
 	Init(*configPath)
 
 	fmt.Println("sync...")
-	// 开始模式匹配 pattern 同步
-	success, failed, err := service.TransferPatterns(appConfig)
+	// 开始同步 keysfile
+	success, failed, err := service.TransferKeysfile(appConfig)
 	if err != nil {
 		fmt.Println("同步失败， 错误：", err.Error())
 		os.Exit(0)
@@ -68,8 +71,8 @@ func main() {
 	fmt.Printf("同步成功: %d 个，详细：\n %s\n", len(success), strings.Join(success, "\n"))
 	fmt.Printf("同步失败: %d 个，详细：\n %s\n", len(failed), strings.Join(failed, "\n"))
 
-	// 开始同步 keysfile
-	success, failed, err = service.TransferKeysfile(appConfig)
+	// 开始模式匹配 pattern 同步
+	success, failed, err = service.TransferPatterns(appConfig)
 	if err != nil {
 		fmt.Println("同步失败， 错误：", err.Error())
 		os.Exit(0)
